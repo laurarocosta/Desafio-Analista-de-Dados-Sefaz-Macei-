@@ -1,7 +1,7 @@
 from pathlib import Path
 import zipfile 
 
-PASTA_ORIGEM = Path(__file__).resolve().parent.parent / "dados" / "origem"
+PASTA_ORIGEM = Path(__file__).resolve().parent.parent / "dados_compactos"
 PASTA_DESTINO = Path(__file__).resolve().parent.parent / "dados_extraidos"
 
 def extrair_todos_os_zips(pasta_origem: Path = PASTA_ORIGEM, pasta_destino: Path = PASTA_DESTINO) -> list[Path]:
