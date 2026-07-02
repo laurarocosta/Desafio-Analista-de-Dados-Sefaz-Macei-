@@ -25,3 +25,26 @@ def ler_um_csv(caminho_csv: Path, ano: int) -> pd.DataFrame:
     )
     df["ano"] = ano
     return df
+
+def classificar_conta(valor_conta: str) -> pd.Series:
+    """Classifica a coluna `Conta` em: tipo_conta, codigo_funcao, funcao_nome,
+    codigo_subfuncao, subfuncao_nome."""
+    if valor_conta in CONTAS_AGREGADAS:
+        return pd.Series(["total_agregado", None, None, None, None])
+
+    if valor_conta.startswith("FU") and " - " in valor_conta:
+        # ex: "FU10 - Demais Subfunções"
+        codigo_funcao = valor_conta[2:4]
+        return pd.Series(["demais_subfuncoes", codigo_funcao, None, None, valor_conta.split(" - ", 1)[1]])
+
+    m_sub = PADRAO_SUBFUNCAO.match(valor_conta)
+    if m_sub:
+        cod_funcao, cod_sub, nome_sub = m_sub.groups()
+        return pd.Series(["subfuncao", cod_funcao, None, f"{cod_funcao}.{cod_sub}", nome_sub])
+
+    m_func = PADRAO_FUNCAO.match(valor_conta)
+    if m_func:
+        cod_funcao, nome_funcao = m_func.groups()
+        return pd.Series(["funcao", cod_funcao, nome_funcao, None, None])
+
+    return pd.Series(["outro", None, None, None, None])
