@@ -48,3 +48,21 @@ def classificar_conta(valor_conta: str) -> pd.Series:
         return pd.Series(["funcao", cod_funcao, nome_funcao, None, None])
 
     return pd.Series(["outro", None, None, None, None])
+
+def consolidar() -> pd.DataFrame:
+    pastas_ano = sorted(p for p in PASTA_EXTRAIDOS.iterdir() if p.is_dir())
+    if not pastas_ano:
+        raise FileNotFoundError(
+            f"Nada em {PASTA_EXTRAIDOS}. Rode antes o script 01_extrair_dados.py"
+        )
+
+    dataframes = []
+    for pasta in pastas_ano:
+        ano = int(pasta.name)
+        csvs = list(pasta.glob("*.csv"))
+        for csv in csvs:
+            df_ano = ler_um_csv(csv, ano)
+            dataframes.append(df_ano)
+            print(f"[OK] {ano}: {len(df_ano):,} linhas lidas de {csv.name}")
+
+    df = pd.concat(dataframes, ignore_index=True)
