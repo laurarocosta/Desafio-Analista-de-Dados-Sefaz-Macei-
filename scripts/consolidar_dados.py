@@ -66,3 +66,31 @@ def consolidar() -> pd.DataFrame:
             print(f"[OK] {ano}: {len(df_ano):,} linhas lidas de {csv.name}")
 
     df = pd.concat(dataframes, ignore_index=True)
+
+ # Garantir que Valor é numérico (às vezes vem como texto se algo escapou do parsing)
+    df["Valor"] = pd.to_numeric(df["Valor"], errors="coerce")
+
+    # Classificar a coluna Conta em função/subfunção
+    colunas_classificacao = ["tipo_conta", "codigo_funcao", "funcao_nome", "codigo_subfuncao", "subfuncao_nome"]
+    df[colunas_classificacao] = df["Conta"].apply(classificar_conta)
+
+    # Preencher o nome da função também nas linhas de subfunção/demais_subfuncoes,
+    # usando um mapa código -> nome construído a partir das linhas tipo "funcao"
+    mapa_funcao = (
+        df.loc[df["tipo_conta"] == "funcao", ["codigo_funcao", "funcao_nome"]]
+        .drop_duplicates()
+        .set_index("codigo_funcao")["funcao_nome"]
+    )
+    df["funcao_nome"] = df["funcao_nome"].fillna(df["codigo_funcao"].map(mapa_funcao))
+
+    # Renomear colunas para snakecase 
+    df = df.rename(columns={
+        "Instituição": "instituicao",
+        "Cod.IBGE": "cod_ibge",
+        "UF": "uf",
+        "População": "populacao",
+        "Coluna": "estagio_despesa",
+        "Conta": "conta_original",
+        "Identificador da Conta": "identificador_conta",
+        "Valor": "valor",
+    })
