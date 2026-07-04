@@ -23,3 +23,24 @@ rodar(
     """,
 )
 
+# 2) Taxa de execução por função (Saúde e Educação), todas as capitais, 2024,
+# ranqueado, mostrando onde Maceió está
+for cod, nome in [("10", "Saúde"), ("12", "Educação")]:
+    rodar(
+        f"2. Taxa de execução em {nome} (função {cod}) por capital - 2024",
+        f"""
+        WITH base AS (
+            SELECT capital,
+                   SUM(CASE WHEN estagio_despesa = 'Despesas Empenhadas' THEN valor END) AS empenhado,
+                   SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) AS pago
+            FROM finbra
+            WHERE ano = 2024 AND tipo_conta = 'funcao' AND codigo_funcao = '{cod}'
+            GROUP BY capital
+        )
+        SELECT capital, empenhado, pago,
+               ROUND(100.0 * pago / empenhado, 1) AS taxa_execucao_pct
+        FROM base
+        ORDER BY taxa_execucao_pct DESC
+        """,
+        n=30,
+    )
