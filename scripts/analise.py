@@ -44,3 +44,19 @@ for cod, nome in [("10", "Saúde"), ("12", "Educação")]:
         """,
         n=30,
     )
+
+# 3) Gasto per capita em Saúde e Educação - 2024, ranqueado
+for cod, nome in [("10", "Saúde"), ("12", "Educação")]:
+    rodar(
+        f"3. Gasto PAGO per capita em {nome} (função {cod}) - 2024",
+        f"""
+        SELECT capital, populacao,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) AS total_pago,
+               ROUND(SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) / populacao, 2) AS pago_per_capita
+        FROM finbra
+        WHERE ano = 2024 AND tipo_conta = 'funcao' AND codigo_funcao = '{cod}'
+        GROUP BY capital, populacao
+        ORDER BY pago_per_capita DESC
+        """,
+        n=30,
+    )
