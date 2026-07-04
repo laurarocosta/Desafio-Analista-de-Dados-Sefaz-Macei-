@@ -128,3 +128,37 @@ rodar(
     n=27,
 )
 
+# 7) Onde Maceió se destaca: taxa de execução de Maceió vs média das capitais,
+# por função, 2024 -- ordenado pela maior diferença (positiva = Maceió melhor)
+rodar(
+    "7. Maceió vs média das capitais - diferença na taxa de execução por função (2024)",
+    """
+    WITH base AS (
+        SELECT capital, funcao_nome,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Empenhadas' THEN valor END) AS empenhado,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) AS pago
+        FROM finbra
+        WHERE ano = 2024 AND tipo_conta = 'funcao'
+        GROUP BY capital, funcao_nome
+    ),
+    taxa AS (
+        SELECT capital, funcao_nome, 100.0 * pago / NULLIF(empenhado, 0) AS taxa_execucao
+        FROM base
+        WHERE empenhado > 0
+    ),
+    agregado AS (
+        SELECT funcao_nome,
+               MAX(CASE WHEN capital = 'Maceió' THEN taxa_execucao END) AS maceio,
+               AVG(taxa_execucao) AS media_capitais
+        FROM taxa
+        GROUP BY funcao_nome
+    )
+    SELECT funcao_nome, ROUND(maceio, 1) AS maceio_pct, ROUND(media_capitais, 1) AS media_capitais_pct,
+           ROUND(maceio - media_capitais, 1) AS diferenca_pp
+    FROM agregado
+    WHERE maceio IS NOT NULL
+    ORDER BY diferenca_pp DESC
+    """,
+    n=27,
+)
+
