@@ -101,3 +101,30 @@ rodar(
     """,
 )
 
+# 6) Em quais funções as capitais mais "empurram" gasto para Restos a Pagar
+# (Empenhado - Pago, em % do empenhado), média entre capitais, 2024
+rodar(
+    "6. Funções com maior % do orçamento empenhado que virou 'restos a pagar' (média das capitais, 2024)",
+    """
+    WITH base AS (
+        SELECT capital, funcao_nome,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Empenhadas' THEN valor END) AS empenhado,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) AS pago
+        FROM finbra
+        WHERE ano = 2024 AND tipo_conta = 'funcao'
+        GROUP BY capital, funcao_nome
+    ),
+    taxa AS (
+        SELECT capital, funcao_nome,
+               100.0 * (empenhado - pago) / NULLIF(empenhado, 0) AS pct_nao_pago
+        FROM base
+        WHERE empenhado > 0
+    )
+    SELECT funcao_nome, ROUND(AVG(pct_nao_pago), 1) AS media_pct_nao_pago_entre_capitais
+    FROM taxa
+    GROUP BY funcao_nome
+    ORDER BY media_pct_nao_pago_entre_capitais DESC
+    """,
+    n=27,
+)
+
