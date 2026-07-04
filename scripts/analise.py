@@ -84,3 +84,20 @@ rodar(
     ORDER BY ano
     """,
 )
+
+# 5) Dentro de Saúde, quais subfunções concentram o gasto em Maceió (2024)?
+rodar(
+    "5. Subfunções que concentram o gasto PAGO em Saúde - Maceió, 2024",
+    """
+    SELECT subfuncao_nome,
+           SUM(valor) AS total_pago,
+           ROUND(100.0 * SUM(valor) / SUM(SUM(valor)) OVER (), 1) AS pct_do_total
+    FROM finbra
+    WHERE ano = 2024 AND capital = 'Maceió'
+      AND codigo_funcao = '10' AND tipo_conta IN ('subfuncao', 'demais_subfuncoes')
+      AND estagio_despesa = 'Despesas Pagas'
+    GROUP BY subfuncao_nome
+    ORDER BY total_pago DESC
+    """,
+)
+
