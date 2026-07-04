@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import duckdb
 
@@ -21,6 +22,27 @@ rodar(
     GROUP BY ano
     ORDER BY ano
     """,
+)
+
+# 1) Taxa de execução financeira por capital, ano de 2024 (último ano completo),
+# considerando o total geral (Despesas Exceto Intraorçamentárias, para não duplicar)
+rodar(
+    "1. Taxa de execução financeira geral por capital (2024, total exceto intraorçamentárias)",
+    """
+    WITH base AS (
+        SELECT capital,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Empenhadas' THEN valor END) AS empenhado,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) AS pago
+        FROM finbra
+        WHERE ano = 2024 AND conta_original = 'Despesas Exceto Intraorçamentárias'
+        GROUP BY capital
+    )
+    SELECT capital, empenhado, pago,
+           ROUND(100.0 * pago / empenhado, 1) AS taxa_execucao_pct
+    FROM base
+    ORDER BY taxa_execucao_pct DESC
+    """,
+    n=30,
 )
 
 # 2) Taxa de execução por função (Saúde e Educação), todas as capitais, 2024,
@@ -60,8 +82,8 @@ for cod, nome in [("10", "Saúde"), ("12", "Educação")]:
         """,
         n=30,
     )
-    
-    # 4) Evolução 2020-2024 de Maceió vs média das capitais, gasto per capita em Saúde
+
+# 4) Evolução 2020-2024 de Maceió vs média das capitais, gasto per capita em Saúde
 rodar(
     "4. Evolução do gasto per capita PAGO em Saúde: Maceió vs média das capitais (2020-2024)",
     """
@@ -161,46 +183,6 @@ rodar(
     """,
     n=27,
 )
-
-# 8) Prévia de 2025 SEM distorcer a amostra: painel balanceado.
-# Em vez de descartar 2025 por completo (só 11 de 26 capitais reportaram),
-# comparamos 2024 vs 2025 APENAS nas mesmas 11 capitais presentes nos dois anos.
-# Assim a variação reflete mudança real de gasto, não mudança de amostra.
-# Atenção: Maceió NÃO está entre as declarantes de 2025, então esta prévia
-# nada diz sobre Maceió — apenas sobre a tendência do painel.
-rodar(
-    "8. Prévia 2025 (painel balanceado): total pago per capita, mesmas 11 capitais em 2024 e 2025",
-    """
-    WITH declarantes_2025 AS (
-        SELECT DISTINCT capital FROM finbra WHERE ano = 2025
-    ),
-    base AS (
-        SELECT f.ano, f.capital, f.populacao,
-               SUM(CASE WHEN f.estagio_despesa = 'Despesas Pagas' THEN f.valor END) AS pago
-        FROM finbra f
-        JOIN declarantes_2025 d USING (capital)
-        WHERE f.ano IN (2024, 2025)
-          AND f.conta_original = 'Despesas Exceto Intraorçamentárias'
-        GROUP BY f.ano, f.capital, f.populacao
-    ),
-    pivotado AS (
-        SELECT capital,
-               MAX(CASE WHEN ano = 2024 THEN pago / populacao END) AS pc_2024,
-               MAX(CASE WHEN ano = 2025 THEN pago / populacao END) AS pc_2025
-        FROM base
-        GROUP BY capital
-    )
-    SELECT capital,
-           ROUND(pc_2024, 2) AS pago_per_capita_2024,
-           ROUND(pc_2025, 2) AS pago_per_capita_2025,
-           ROUND(100.0 * (pc_2025 - pc_2024) / pc_2024, 1) AS variacao_pct
-    FROM pivotado
-    ORDER BY variacao_pct DESC
-    """,
-    n=15,
-)
-
-print("\n\nAnálise concluída.")
 
 # 8) Prévia de 2025 SEM distorcer a amostra: painel balanceado.
 # Em vez de descartar 2025 por completo (só 11 de 26 capitais reportaram),
