@@ -8,6 +8,7 @@ ARQUIVO_PARQUET = PASTA_SAIDA / "consolidado.parquet"
 
 #Separador de função e subfunção 
 PADRAO_FUNCAO = re.compile(r"^(\d{2}) - (.+)$")
+PADRAO_SUBFUNCAO = re.compile(r"^(\d{2})\.(\d{3}) - (.+)$")
 
 CONTAS_AGREGADAS = {
     "Despesas Exceto Intraorçamentárias",
@@ -26,9 +27,9 @@ def ler_um_csv(caminho_csv: Path, ano: int) -> pd.DataFrame:
     df["ano"] = ano
     return df
 
-def classificar_conta(valor_conta: str) -> pd.Series:
-    """Classifica a coluna `Conta` em: tipo_conta, codigo_funcao, funcao_nome,
-    codigo_subfuncao, subfuncao_nome."""
+def classificar_conta(valor_conta):
+    if not isinstance(valor_conta, str):
+        return pd.Series(["outro", None, None, None, None])
     if valor_conta in CONTAS_AGREGADAS:
         return pd.Series(["total_agregado", None, None, None, None])
 
