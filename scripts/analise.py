@@ -1,7 +1,7 @@
 from pathlib import Path
 import duckdb
 
-PARQUET = Path(__file__).resolve().parent.parent / "dados_consolidados" / "finbra_consolidado.parquet"
+PARQUET = Path(__file__).resolve().parent.parent / "dados_consolidados" / "consolidado.parquet"
 
 con = duckdb.connect()
 con.execute(f"CREATE VIEW finbra AS SELECT * FROM read_parquet('{PARQUET}')")

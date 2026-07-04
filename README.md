@@ -34,3 +34,9 @@ imprime é a contagem de capitais por ano:
 |---|---|
 | 2020–2024 | 26 |
 | 2025 | **11** |
+
+
+Por isso, **2025 foi excluído de todas as comparações** entre capitais e de
+todas as séries temporais do relatório (que usam 2020–2024). Os dados de 2025
+estão no Parquet consolidado (nada foi descartado), apenas não entram nas
+análises comparativas.
