@@ -60,3 +60,27 @@ for cod, nome in [("10", "Saúde"), ("12", "Educação")]:
         """,
         n=30,
     )
+    
+    # 4) Evolução 2020-2024 de Maceió vs média das capitais, gasto per capita em Saúde
+rodar(
+    "4. Evolução do gasto per capita PAGO em Saúde: Maceió vs média das capitais (2020-2024)",
+    """
+    WITH por_capital AS (
+        SELECT ano, capital, populacao,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) AS pago
+        FROM finbra
+        WHERE tipo_conta = 'funcao' AND codigo_funcao = '10' AND ano BETWEEN 2020 AND 2024
+        GROUP BY ano, capital, populacao
+    ),
+    per_capita AS (
+        SELECT ano, capital, pago / populacao AS pago_per_capita
+        FROM por_capital
+    )
+    SELECT ano,
+           ROUND(MAX(CASE WHEN capital = 'Maceió' THEN pago_per_capita END), 2) AS maceio,
+           ROUND(AVG(pago_per_capita), 2) AS media_capitais
+    FROM per_capita
+    GROUP BY ano
+    ORDER BY ano
+    """,
+)
