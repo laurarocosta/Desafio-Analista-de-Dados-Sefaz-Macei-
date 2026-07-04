@@ -94,3 +94,31 @@ def consolidar() -> pd.DataFrame:
         "Identificador da Conta": "identificador_conta",
         "Valor": "valor",
     })
+    
+     # Nome mais limpo da capital 
+    df["capital"] = df["instituicao"].str.replace(
+        r"^Prefeitura Municipal d[eo] (.+?)\s*-\s*[A-Z]{2}$", r"\1", regex=True
+    )
+
+    ordem_colunas = [
+        "ano", "capital", "instituicao", "cod_ibge", "uf", "populacao",
+        "estagio_despesa", "conta_original", "tipo_conta",
+        "codigo_funcao", "funcao_nome", "codigo_subfuncao", "subfuncao_nome",
+        "identificador_conta", "valor",
+    ]
+    df = df[ordem_colunas]
+
+    return df
+
+
+if __name__ == "__main__":
+    df = consolidar()
+    PASTA_SAIDA.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(ARQUIVO_PARQUET, index=False)
+
+    print(f"\nDataFrame consolidado: {len(df):,} linhas, {df['ano'].nunique()} anos, "
+          f"{df['capital'].nunique()} capitais")
+    print(f"Salvo em: {ARQUIVO_PARQUET}")
+    print("\nCapitais por ano (checagem de completude):")
+    print(df.groupby("ano")["capital"].nunique())
+
