@@ -93,7 +93,7 @@ Principais achados:
 2. **Em Saúde, Maceió executa bem**: 97,4%, 5ª melhor entre as capitais. O
    gasto per capita convergiu para a média das capitais a partir de 2023,
    depois de ficar ~15% abaixo em 2020-2022.
-3. **Em Educação, o quadro inverte**: execução de 85,5% (4ª pior) e per capita
+3. **Em Educação, o quadro inverte**: execução de 85,5% (3ª pior) e per capita
    de R$ 716/hab — entre os 4 mais baixos das 26 capitais.
 4. **Habitação é o maior outlier**: Maceió pagou apenas 30% do que empenhou
    em 2024, contra 85% da média das capitais (diferença de 55 pontos
