@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import duckdb
 import matplotlib.pyplot as plt
@@ -160,6 +159,9 @@ cores5 = ["#2ca02c" if v >= 0 else "#d62728" for v in df5["variacao"]]
 fig, ax = plt.subplots(figsize=(8, 5.5))
 ax.barh(df5["capital"], df5["variacao"], color=cores5)
 ax.axvline(0, color="black", linewidth=0.8)
+# margem extra nas pontas para os rótulos não cortarem na borda
+vmin, vmax = df5["variacao"].min(), df5["variacao"].max()
+ax.set_xlim(vmin - 2.5, vmax + 2.5)
 ax.set_xlabel("Variação do total pago per capita, 2024 → 2025 (%)")
 ax.set_title("Prévia 2025 (painel balanceado): apenas as 11 capitais que declararam\n(valores nominais; Maceió não está entre as declarantes)")
 for i, v in enumerate(df5["variacao"]):
