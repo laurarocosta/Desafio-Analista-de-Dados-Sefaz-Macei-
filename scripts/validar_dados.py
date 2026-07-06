@@ -32,3 +32,11 @@ def main() -> int:
         (capitais_por_ano == 26).all(),
         f"mín/máx: {capitais_por_ano.min()}/{capitais_por_ano.max()}",
     ))
+    
+    # 3. Nenhum valor nulo após conversão numérica
+    nulos = df["valor"].isna().sum()
+    resultados.append(check(
+        "Zero nulos na coluna valor",
+        nulos == 0,
+        f"nulos: {nulos}",
+    ))
