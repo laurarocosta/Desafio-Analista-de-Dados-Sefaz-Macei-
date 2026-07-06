@@ -222,4 +222,35 @@ rodar(
     n=15,
 )
 
+# 9) Aprofundamento: onde exatamente trava a execução de Educação em Maceió?
+# A taxa geral de 85,5% esconde o problema: comparamos a execução por
+# subfunção de Maceió com a média das capitais para localizar o gargalo.
+rodar(
+    "9. Educação por subfunção: taxa de execução de Maceió vs média das capitais (2024)",
+    """
+    WITH base AS (
+        SELECT capital, subfuncao_nome,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Empenhadas' THEN valor END) AS empenhado,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) AS pago
+        FROM finbra
+        WHERE ano = 2024 AND codigo_funcao = '12' AND tipo_conta = 'subfuncao'
+        GROUP BY capital, subfuncao_nome
+    ),
+    taxa AS (
+        SELECT capital, subfuncao_nome,
+               100.0 * pago / NULLIF(empenhado, 0) AS taxa_execucao,
+               empenhado, pago
+        FROM base WHERE empenhado > 0
+    )
+    SELECT subfuncao_nome,
+           ROUND(MAX(CASE WHEN capital = 'Maceió' THEN taxa_execucao END), 1) AS maceio_pct,
+           ROUND(AVG(taxa_execucao), 1) AS media_capitais_pct,
+           ROUND(MAX(CASE WHEN capital = 'Maceió' THEN (empenhado - pago) / 1e6 END), 1) AS maceio_represado_mi
+    FROM taxa
+    GROUP BY subfuncao_nome
+    HAVING maceio_pct IS NOT NULL
+    ORDER BY (maceio_pct - media_capitais_pct) ASC
+    """,
+)
+
 print("\n\nAnálise concluída.")

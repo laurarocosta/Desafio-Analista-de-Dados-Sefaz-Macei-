@@ -172,4 +172,46 @@ plt.savefig(PASTA_GRAFICOS / "05_previa_2025_painel_balanceado.png")
 plt.close()
 print("[OK] 05_previa_2025_painel_balanceado.png")
 
+# 6) Educação por subfunção: Maceió vs média das capitais
+# Mostra ONDE trava a execução de Educação em Maceió
+df6 = con.execute("""
+    WITH base AS (
+        SELECT capital, subfuncao_nome,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Empenhadas' THEN valor END) AS empenhado,
+               SUM(CASE WHEN estagio_despesa = 'Despesas Pagas' THEN valor END) AS pago
+        FROM finbra
+        WHERE ano = 2024 AND codigo_funcao = '12' AND tipo_conta = 'subfuncao'
+        GROUP BY capital, subfuncao_nome
+    ),
+    taxa AS (
+        SELECT capital, subfuncao_nome, 100.0 * pago / NULLIF(empenhado, 0) AS taxa
+        FROM base WHERE empenhado > 0
+    )
+    SELECT subfuncao_nome,
+           MAX(CASE WHEN capital = 'Maceió' THEN taxa END) AS maceio,
+           AVG(taxa) AS media
+    FROM taxa GROUP BY subfuncao_nome
+    HAVING maceio IS NOT NULL
+    ORDER BY maceio ASC
+""").df()
+
+import numpy as np
+y = np.arange(len(df6))
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.barh(y + 0.2, df6["maceio"], height=0.4, color=COR_MACEIO, label="Maceió")
+ax.barh(y - 0.2, df6["media"], height=0.4, color=COR_OUTRAS, label="Média das capitais")
+ax.set_yticks(y)
+ax.set_yticklabels(df6["subfuncao_nome"])
+ax.set_xlabel("Taxa de execução (%) — Pago / Empenhado")
+ax.set_title("Educação por subfunção: onde trava a execução de Maceió (2024)")
+ax.legend(loc="lower right")
+ax.set_xlim(0, 105)
+for yi, (m, md) in enumerate(zip(df6["maceio"], df6["media"])):
+    ax.text(m + 1, yi + 0.2, f"{m:.1f}%", va="center", fontsize=8)
+    ax.text(md + 1, yi - 0.2, f"{md:.1f}%", va="center", fontsize=8, color="#555")
+plt.tight_layout()
+plt.savefig(PASTA_GRAFICOS / "06_educacao_subfuncoes_maceio_vs_media.png")
+plt.close()
+print("[OK] 06_educacao_subfuncoes_maceio_vs_media.png")
+
 print("\nTodos os gráficos foram salvos em", PASTA_GRAFICOS)
