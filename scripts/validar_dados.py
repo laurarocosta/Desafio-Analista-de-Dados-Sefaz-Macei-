@@ -49,17 +49,28 @@ def main() -> int:
             f"linhas 'outro': {outros}",
         ))
 
-    # 5. Fechamento contábil: soma das subfunções = total da função
-    # (testado na função Saúde de Maceió em 2024 — se a classificação
-    # estivesse errada, essa soma não bateria)
-    filtro = (df["ano"] == 2024) & (df["capital"] == "Maceió") & (df["codigo_funcao"] == "10") & (df["estagio_despesa"] == "Despesas Pagas")
-    total_funcao = df[filtro & (df["tipo_conta"] == "funcao")]["valor"].sum()
-    total_subfuncoes = df[filtro & (df["tipo_conta"].isin(["subfuncao", "demais_subfuncoes"]))]["valor"].sum()
-    diferenca = abs(total_funcao - total_subfuncoes)
+    # 5. Fechamento contábil: soma das subfunções = total da função,
+    # verificado em TODAS as combinações de ano/capital/função/estágio
+    # (não só um caso único — um erro de classificação em outro recorte
+    # passaria despercebido se testássemos apenas Saúde/Maceió/2024)
+    soma_funcao = (
+        df[df["tipo_conta"] == "funcao"]
+        .groupby(["ano", "capital", "codigo_funcao", "estagio_despesa"])["valor"]
+        .sum()
+    )
+    soma_subfuncoes = (
+        df[df["tipo_conta"].isin(["subfuncao", "demais_subfuncoes"])]
+        .groupby(["ano", "capital", "codigo_funcao", "estagio_despesa"])["valor"]
+        .sum()
+    )
+    fechamento = (soma_funcao - soma_subfuncoes).dropna()
+    maior_diferenca = fechamento.abs().max()
+    fora_da_tolerancia = (fechamento.abs() >= 1.0).sum()  # tolerância de R$ 1 (arredondamento)
     resultados.append(check(
-        "Fechamento: soma das subfunções = total da função (Saúde/Maceió/2024)",
-        diferenca < 1.0,  # tolerância de R$ 1 para arredondamento de ponto flutuante
-        f"diferença: R$ {diferenca:.2f}",
+        f"Fechamento contábil: soma das subfunções = total da função "
+        f"(todas as {len(fechamento):,} combinações ano/capital/função/estágio)",
+        fora_da_tolerancia == 0,
+        f"maior diferença: R$ {maior_diferenca:.2f}, fora da tolerância: {fora_da_tolerancia}",
     ))
 
     # 6. Sem duplicatas exatas (mesma capital, ano, conta e estágio duplicados)
@@ -72,10 +83,10 @@ def main() -> int:
 
     print()
     if all(resultados):
-        print(f"✔ Todas as {len(resultados)} validações passaram. Base íntegra.")
+        print(f"[OK] Todas as {len(resultados)} validações passaram. Base íntegra.")
         return 0
     falhas = len(resultados) - sum(resultados)
-    print(f"✘ {falhas} validação(ões) falhou(aram). Revise a consolidação.")
+    print(f"[ERRO] {falhas} validação(ões) falhou(aram). Revise a consolidação.")
     return 1
 
 

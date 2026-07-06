@@ -54,7 +54,7 @@ def consolidar() -> pd.DataFrame:
     pastas_ano = sorted(p for p in PASTA_EXTRAIDOS.iterdir() if p.is_dir())
     if not pastas_ano:
         raise FileNotFoundError(
-            f"Nada em {PASTA_EXTRAIDOS}. Rode antes o script 01_extrair_dados.py"
+            f"Nada em {PASTA_EXTRAIDOS}. Rode antes o script extrair_dados.py"
         )
 
     dataframes = []

@@ -1,6 +1,7 @@
 from pathlib import Path
 import duckdb
 import matplotlib.pyplot as plt
+import numpy as np
 
 PARQUET = Path(__file__).resolve().parent.parent / "dados_consolidados" / "consolidado.parquet"
 PASTA_GRAFICOS = Path(__file__).resolve().parent.parent / "analise" / "graficos"
@@ -195,7 +196,6 @@ df6 = con.execute("""
     ORDER BY maceio ASC
 """).df()
 
-import numpy as np
 y = np.arange(len(df6))
 fig, ax = plt.subplots(figsize=(8, 5))
 ax.barh(y + 0.2, df6["maceio"], height=0.4, color=COR_MACEIO, label="Maceió")
