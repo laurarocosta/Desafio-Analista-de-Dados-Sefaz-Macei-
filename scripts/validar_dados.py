@@ -1,0 +1,27 @@
+from pathlib import Path
+import sys
+import pandas as pd
+
+PARQUET = Path(__file__).resolve().parent.parent / "dados_consolidados" / "consolidado.parquet"
+
+def check(nome: str, condicao: bool, detalhe: str = "") -> bool:
+    status = "PASSOU" if condicao else "FALHOU"
+    print(f"[{status}] {nome}" + (f" — {detalhe}" if detalhe else ""))
+    return condicao
+
+
+def main() -> int:
+    if not PARQUET.exists():
+        print(f"ERRO: {PARQUET} não existe. Rode antes o consolidar_dados.py")
+        return 1
+
+    df = pd.read_parquet(PARQUET)
+    resultados = []
+
+    # 1. Volume esperado: 6 anos consolidados
+    anos = sorted(df["ano"].unique())
+    resultados.append(check(
+        "6 anos presentes (2020-2025)",
+        anos == [2020, 2021, 2022, 2023, 2024, 2025],
+        f"anos encontrados: {anos}",
+    ))
