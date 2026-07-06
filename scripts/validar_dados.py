@@ -25,3 +25,10 @@ def main() -> int:
         anos == [2020, 2021, 2022, 2023, 2024, 2025],
         f"anos encontrados: {anos}",
     ))
+    # 2. 26 capitais em cada ano completo (2020-2024)
+    capitais_por_ano = df[df["ano"] <= 2024].groupby("ano")["capital"].nunique()
+    resultados.append(check(
+        "26 capitais em cada ano de 2020 a 2024",
+        (capitais_por_ano == 26).all(),
+        f"mín/máx: {capitais_por_ano.min()}/{capitais_por_ano.max()}",
+    ))
