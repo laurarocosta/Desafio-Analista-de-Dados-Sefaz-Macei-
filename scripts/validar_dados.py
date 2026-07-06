@@ -40,3 +40,44 @@ def main() -> int:
         nulos == 0,
         f"nulos: {nulos}",
     ))
+       # 4. Nenhuma linha ficou sem classificação na coluna Conta
+    if "tipo_conta" in df.columns:
+        outros = (df["tipo_conta"] == "outro").sum()
+        resultados.append(check(
+            "Classificação de Conta cobriu 100% das linhas",
+            outros == 0,
+            f"linhas 'outro': {outros}",
+        ))
+
+    # 5. Fechamento contábil: soma das subfunções = total da função
+    # (testado na função Saúde de Maceió em 2024 — se a classificação
+    # estivesse errada, essa soma não bateria)
+    filtro = (df["ano"] == 2024) & (df["capital"] == "Maceió") & (df["codigo_funcao"] == "10") & (df["estagio_despesa"] == "Despesas Pagas")
+    total_funcao = df[filtro & (df["tipo_conta"] == "funcao")]["valor"].sum()
+    total_subfuncoes = df[filtro & (df["tipo_conta"].isin(["subfuncao", "demais_subfuncoes"]))]["valor"].sum()
+    diferenca = abs(total_funcao - total_subfuncoes)
+    resultados.append(check(
+        "Fechamento: soma das subfunções = total da função (Saúde/Maceió/2024)",
+        diferenca < 1.0,  # tolerância de R$ 1 para arredondamento de ponto flutuante
+        f"diferença: R$ {diferenca:.2f}",
+    ))
+
+    # 6. Sem duplicatas exatas (mesma capital, ano, conta e estágio duplicados)
+    duplicatas = df.duplicated(subset=["ano", "capital", "conta_original", "estagio_despesa"]).sum()
+    resultados.append(check(
+        "Sem linhas duplicadas (capital + ano + conta + estágio)",
+        duplicatas == 0,
+        f"duplicatas: {duplicatas}",
+    ))
+
+    print()
+    if all(resultados):
+        print(f"✔ Todas as {len(resultados)} validações passaram. Base íntegra.")
+        return 0
+    falhas = len(resultados) - sum(resultados)
+    print(f"✘ {falhas} validação(ões) falhou(aram). Revise a consolidação.")
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
