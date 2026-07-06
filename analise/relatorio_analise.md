@@ -225,8 +225,10 @@ classificados nessas duas subfunções.
 
 ## Limitações e próximos passos
 
-- Não foi feita análise de **subfunção** para todas as funções — apenas Saúde,
-  como exemplo (Passo 4 do README é opcional nesse nível de detalhe).
+- A análise de **subfunção** foi feita para Saúde (seção 5) e Educação
+  (seção 9) — esta última adicionada após o achado da taxa de 85,5%, para
+  localizar o gargalo. A próxima candidata natural seria Habitação, o maior
+  outlier de execução do dataset.
 - Valores não foram deflacionados — a evolução 2020-2024 mistura efeito de
   inflação com efeito de política pública. Uma versão futura poderia trazer os
   valores a preços constantes (ex.: IPCA).

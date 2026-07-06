@@ -12,10 +12,11 @@ cada etapa
 pip install -r requirements.txt
 
 # 2. Rodar os scripts na ordem
-python scripts/extrair_dados.py
-python scripts/consolidar_dados.py
-python scripts/analise.py
-python scripts/gerar_graficos.py
+python scripts/extrair_dados.py       # descompacta os zips
+python scripts/consolidar_dados.py    # consolida e gera o Parquet
+python scripts/validar_dados.py       # confere a integridade da base (6 checagens)
+python scripts/analise.py             # indicadores no terminal
+python scripts/gerar_graficos.py      # gera os PNGs
 ```
 
 O relatório final com os insights está em `analise/relatorio_analise.md`.
@@ -32,11 +33,12 @@ Os gráficos ficam em `analise/graficos/`.
 ├── scripts/
 │   ├── extrair_dados.py      # Passo 1
 │   ├── consolidar_dados.py   # Passos 2 e 3
+│   ├── validar_dados.py      # validação automática da base
 │   ├── analise.py            # Passo 4 (consultas SQL via DuckDB)
 │   └── gerar_graficos.py     # Passo 4 (visualizações)
 ├── analise/
 │   ├── relatorio_analise.md  # Passo 4: insights e conclusões
-│   └── graficos/             # 5 PNGs gerados
+│   └── graficos/             # 6 PNGs gerados
 ├── requirements.txt         
 └── README.md                 # este arquivo
 ```
