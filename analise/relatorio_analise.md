@@ -18,7 +18,7 @@ Todos os números abaixo saem de consultas SQL rodadas com DuckDB direto sobre
 | 2025 | 11 / 26 |
 
 **2025 foi excluído das comparações gerais entre capitais e das séries
-temporais** — com menos da metade das capitais reportando, qualquer média ou
+temporais**, com menos da metade das capitais reportando, qualquer média ou
 ranking ficaria distorcido. As análises de evolução temporal usam 2020-2024.
 A única exceção é a **prévia com painel balanceado** da seção 8, que compara
 2024 × 2025 apenas dentro das mesmas 11 capitais declarantes.
@@ -179,6 +179,33 @@ abaixo da inflação do período tiveram queda **real** de gasto per capita;
 nada afirma sobre Maceió — registrar essa ausência também é um achado: em
 uma análise para a própria Sefaz, a primeira recomendação seria acompanhar o
 calendário de declaração ao Siconfi.
+
+## 9. Onde exatamente trava a Educação em Maceió
+
+![Educação por subfunção](graficos/06_educacao_subfuncoes_maceio_vs_media.png)
+
+A taxa de 85,5% em Educação esconde o diagnóstico. Abrindo por subfunção,
+o gargalo é localizado:
+
+| Subfunção | Maceió | Média capitais | Represado (R$ mi) |
+|---|---:|---:|---:|
+| **Educação Básica** | **69,3%** | 91,1% | **62,6** |
+| Administração Geral | 82,2% | 90,7% | 41,8 |
+| Educação Infantil | 96,6% | 93,4% | 1,7 |
+| Ensino Fundamental | 97,3% | 93,2% | 8,1 |
+| Educação Especial | 100,0% | 95,1% | 0,0 |
+| Educação de Jovens e Adultos | 100,0% | 93,4% | 0,0 |
+
+Leitura: Ensino Fundamental, Educação Infantil, Especial e EJA executam
+**acima** da média das capitais. O problema está concentrado em duas
+subfunções: **Educação Básica** (69,3% — quase 22 p.p. abaixo da média, com
+R$ 62,6 mi represados) e **Administração Geral** (82,2%). Juntas, elas
+respondem por R$ 104 mi dos R$ 116 mi não pagos da função inteira.
+
+Ou seja: não é a Educação de Maceió que executa mal — são duas rubricas
+específicas. Esse nível de detalhe transforma o achado em algo acionável:
+a investigação de causa pode começar direto nos contratos e convênios
+classificados nessas duas subfunções.
 
 ## Conclusões principais
 
