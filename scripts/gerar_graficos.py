@@ -13,6 +13,12 @@ con.execute(f"CREATE VIEW finbra AS SELECT * FROM read_parquet('{PARQUET}')")
 plt.rcParams["figure.dpi"] = 110
 COR_MACEIO = "#e61174"
 COR_OUTRAS = "#4c72b0"
+# Paleta Okabe-Ito, segura para as formas mais comuns de daltonismo
+# (deuteranopia/protanopia não distinguem vermelho de verde, mas
+# distinguem bem azul de laranja).
+COR_ACIMA_MEDIA = "#0072B2"   # azul
+COR_ABAIXO_MEDIA = "#E69F00"  # laranja
+
 
 
 def cores_destacando_maceio(labels):
