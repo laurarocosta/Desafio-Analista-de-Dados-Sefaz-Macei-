@@ -19,6 +19,7 @@ COR_OUTRAS = "#4c72b0"
 COR_ACIMA_MEDIA = "#0072B2"   # azul
 COR_ABAIXO_MEDIA = "#E69F00"  # laranja
 
+
 def cores_destacando_maceio(labels):
     return [COR_MACEIO if l == "Maceió" else COR_OUTRAS for l in labels]
 
@@ -124,7 +125,7 @@ df4 = con.execute("""
     ORDER BY diferenca_pp ASC
 """).df()
 
-cores4 = ["#2ca02c" if v >= 0 else "#d62728" for v in df4["diferenca_pp"]]
+cores4 = [COR_ACIMA_MEDIA if v >= 0 else COR_ABAIXO_MEDIA for v in df4["diferenca_pp"]]
 fig, ax = plt.subplots(figsize=(8, 9))
 ax.barh(df4["funcao_nome"], df4["diferenca_pp"], color=cores4)
 ax.axvline(0, color="black", linewidth=0.8)
@@ -160,7 +161,7 @@ df5 = con.execute("""
     FROM pivotado ORDER BY variacao ASC
 """).df()
 
-cores5 = ["#2ca02c" if v >= 0 else "#d62728" for v in df5["variacao"]]
+cores5 = [COR_ACIMA_MEDIA if v >= 0 else COR_ABAIXO_MEDIA for v in df5["variacao"]]
 fig, ax = plt.subplots(figsize=(8, 5.5))
 ax.barh(df5["capital"], df5["variacao"], color=cores5)
 ax.axvline(0, color="black", linewidth=0.8)
@@ -217,5 +218,47 @@ plt.tight_layout()
 plt.savefig(PASTA_GRAFICOS / "06_educacao_subfuncoes_maceio_vs_media.png")
 plt.close()
 print("[OK] 06_educacao_subfuncoes_maceio_vs_media.png")
+
+
+# 7) Deflação por IPCA: a evolução do per capita de Saúde é real, ou é
+# em boa parte inflação? Índices oficiais do IPCA (IBGE/BCB), acumulado
+# anual: 2020=4,52% | 2021=10,06% | 2022=5,79% | 2023=4,62% | 2024=4,83%.
+# Convertendo tudo para poder de compra de dez/2024 (ano-base), pela
+# multiplicação em cadeia da inflação de cada ano até 2024.
+IPCA_ANUAL = {2020: 0.0452, 2021: 0.1006, 2022: 0.0579, 2023: 0.0462, 2024: 0.0483}
+
+
+def fator_deflator_para_2024(ano: int) -> float:
+    """Fator que converte R$ do ano informado em R$ de dez/2024
+    (poder de compra), multiplicando a inflação acumulada de cada
+    ano seguinte até 2024, em cadeia."""
+    fator = 1.0
+    for a in range(ano + 1, 2025):
+        fator *= (1 + IPCA_ANUAL[a])
+    return fator
+
+
+df7 = df2.copy()  # reaproveita a consulta de evolução de Saúde per capita (nominal)
+df7["deflator"] = df7["ano"].apply(fator_deflator_para_2024)
+df7["maceio_real"] = df7["maceio"] * df7["deflator"]
+df7["media_real"] = df7["media_capitais"] * df7["deflator"]
+
+fig, ax = plt.subplots(figsize=(8, 5.5))
+ax.plot(df7["ano"], df7["maceio"], marker="o", linestyle="--", color=COR_MACEIO,
+        alpha=0.45, label="Maceió (nominal)")
+ax.plot(df7["ano"], df7["maceio_real"], marker="o", color=COR_MACEIO,
+        label="Maceió (a preços de dez/2024)")
+ax.plot(df7["ano"], df7["media_capitais"], marker="o", linestyle="--", color=COR_OUTRAS,
+        alpha=0.45, label="Média das capitais (nominal)")
+ax.plot(df7["ano"], df7["media_real"], marker="o", color=COR_OUTRAS,
+        label="Média das capitais (a preços de dez/2024)")
+ax.set_ylabel("Gasto per capita pago em Saúde (R$)")
+ax.set_title("Saúde per capita: valores nominais vs. deflacionados pelo IPCA\n(2020-2024, a preços de dezembro de 2024)")
+ax.legend(fontsize=8, loc="upper left")
+ax.grid(alpha=0.3)
+plt.tight_layout()
+plt.savefig(PASTA_GRAFICOS / "07_saude_percapita_deflacionado_ipca.png")
+plt.close()
+print("[OK] 07_saude_percapita_deflacionado_ipca.png")
 
 print("\nTodos os gráficos foram salvos em", PASTA_GRAFICOS)
