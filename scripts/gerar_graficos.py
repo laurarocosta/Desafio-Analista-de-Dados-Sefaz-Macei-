@@ -19,8 +19,6 @@ COR_OUTRAS = "#4c72b0"
 COR_ACIMA_MEDIA = "#0072B2"   # azul
 COR_ABAIXO_MEDIA = "#E69F00"  # laranja
 
-
-
 def cores_destacando_maceio(labels):
     return [COR_MACEIO if l == "Maceió" else COR_OUTRAS for l in labels]
 
@@ -43,7 +41,7 @@ fig, ax = plt.subplots(figsize=(8, 9))
 ax.barh(df1["capital"], df1["taxa"], color=cores_destacando_maceio(df1["capital"]))
 ax.set_xlabel("Taxa de execução financeira (%) — Pago / Empenhado")
 ax.set_title("Taxa de execução financeira geral por capital — 2024")
-ax.set_xlim(80, 100)
+ax.set_xlim(0, 100)
 for i, v in enumerate(df1["taxa"]):
     ax.text(v + 0.1, i, f"{v:.1f}%", va="center", fontsize=8)
 plt.tight_layout()
