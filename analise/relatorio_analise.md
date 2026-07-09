@@ -89,6 +89,32 @@ ultrapassou a média** e se manteve muito próxima dela em 2024 (queda de apenas
 investigar se foi um reajuste orçamentário pontual, inflação da saúde
 pós-pandemia, ou mudança de política.
 
+### 4.1. A mesma evolução, corrigida pela inflação (IPCA)
+
+![Saúde per capita, nominal vs. deflacionado](graficos/07_saude_percapita_deflacionado_ipca.png)
+
+Os valores acima são **nominais** — misturam crescimento real do gasto com
+inflação do período. Trazendo a série a preços de dezembro de 2024, usando o
+IPCA acumulado anual oficial do IBGE/Banco Central (2020: 4,52% · 2021:
+10,06% · 2022: 5,79% · 2023: 4,62% · 2024: 4,83%), o quadro muda de
+intensidade, mas não de direção:
+
+| Ano | Maceió nominal | Maceió a preços de 2024 | Média nominal | Média a preços de 2024 |
+|---|---:|---:|---:|---:|
+| 2020 | 766,94 | 979,35 | 881,20 | 1.125,25 |
+| 2021 | 737,29 | 855,42 | 939,08 | 1.089,55 |
+| 2022 | 832,41 | 912,93 | 997,61 | 1.094,12 |
+| 2023 | 1.235,46 | 1.295,13 | 1.158,78 | 1.214,75 |
+| 2024 | 1.314,67 | 1.314,67 | 1.348,42 | 1.348,42 |
+
+O crescimento do gasto per capita de Maceió em Saúde entre 2020 e 2024 foi de
+**71,4% em termos nominais**, mas de **34,2% em termos reais** — quase a
+metade do que o número bruto sugere. Ainda assim, a **convergência com a
+média das capitais se confirma** mesmo depois de corrigir a inflação: Maceió
+saiu de 87% da média real em 2020 para 97,5% da média real em 2024. A
+inflação explica parte do salto nominal, mas não o fenômeno de convergência
+em si.
+
 ---
 
 ## 5. Onde Maceió gasta em Saúde
@@ -229,9 +255,11 @@ classificados nessas duas subfunções.
   (seção 9) — esta última adicionada após o achado da taxa de 85,5%, para
   localizar o gargalo. A próxima candidata natural seria Habitação, o maior
   outlier de execução do dataset.
-- Valores não foram deflacionados — a evolução 2020-2024 mistura efeito de
-  inflação com efeito de política pública. Uma versão futura poderia trazer os
-  valores a preços constantes (ex.: IPCA).
+- Valores foram deflacionados pelo IPCA **apenas para a série de Saúde
+  2020-2024** (seção 4.1), como demonstração — o crescimento nominal de
+  71,4% cai para 34,2% em termos reais. As demais séries e comparações deste
+  relatório continuam em valores nominais; estender a deflação para todas
+  elas é o próximo passo natural.
 - `População` no arquivo é uma estimativa e pode não ser atualizada anualmente
   pelo IBGE da mesma forma para todas as capitais — os per capita são uma
   aproximação.

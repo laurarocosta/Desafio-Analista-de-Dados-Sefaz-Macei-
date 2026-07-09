@@ -35,7 +35,7 @@ python scripts/extrair_dados.py      # abre os 6 zips por código
 python scripts/consolidar_dados.py   # trata e une tudo num Parquet
 python scripts/validar_dados.py      # 6 testes de integridade da base
 python scripts/analise.py            # imprime os indicadores no terminal
-python scripts/gerar_graficos.py     # exporta as 6 figuras
+python scripts/gerar_graficos.py     # exporta as 7 figuras
 ```
 
 O texto completo com os achados fica em
@@ -139,6 +139,15 @@ Básica.
 
 ![Per capita de Saúde, Maceió × média](analise/graficos/02_evolucao_saude_percapita.png)
 
+Esses valores são nominais. Trazendo a série a preços de dezembro de 2024
+pelo IPCA acumulado oficial de cada ano (IBGE/Banco Central), o crescimento
+do per capita de Maceió em Saúde entre 2020 e 2024 cai de 71,4% nominal para
+**34,2% em termos reais** — ainda assim, a convergência com a média das
+capitais se confirma mesmo descontada a inflação (Maceió foi de 87% para
+97,5% da média real no período).
+
+![Saúde per capita, nominal vs. deflacionado pelo IPCA](analise/graficos/07_saude_percapita_deflacionado_ipca.png)
+
 ### 2025: comparar só quem declarou
 
 Com 11 de 26 capitais na base, qualquer média de 2025 mede mudança de
@@ -168,8 +177,10 @@ informação.
 
 ## Até onde esta análise vai — e onde ela para
 
-- Os valores são **nominais**. Parte do crescimento 2020–2024 é inflação;
-  trazer a série a preços de hoje (IPCA) é o próximo passo natural.
+- A deflação por IPCA foi aplicada **apenas à série de Saúde 2020-2024**
+  (seção acima), como demonstração de que dá para separar crescimento real
+  de inflação. As demais comparações deste README continuam em valores
+  nominais — estender a correção a todas elas é o passo natural seguinte.
 - A **população declarada mudou de metodologia no meio da série**: entre
   2023 e 2024, todas as 26 capitais tiveram revisões bruscas (de −16% a
   +11%), provável efeito do Censo 2022. Qualquer per capita que cruze esses
