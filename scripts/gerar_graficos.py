@@ -209,16 +209,17 @@ ax.set_yticks(y)
 ax.set_yticklabels(df6["subfuncao_nome"])
 ax.set_xlabel("Taxa de execução (%) — Pago / Empenhado")
 ax.set_title("Educação por subfunção: onde trava a execução de Maceió (2024)")
-ax.legend(loc="lower right")
-ax.set_xlim(0, 105)
+ax.set_xlim(0, 110) 
+
+
 for yi, (m, md) in enumerate(zip(df6["maceio"], df6["media"])):
     ax.text(m + 1, yi + 0.2, f"{m:.1f}%", va="center", fontsize=8)
     ax.text(md + 1, yi - 0.2, f"{md:.1f}%", va="center", fontsize=8, color="#555")
+
 plt.tight_layout()
 plt.savefig(PASTA_GRAFICOS / "06_educacao_subfuncoes_maceio_vs_media.png")
 plt.close()
 print("[OK] 06_educacao_subfuncoes_maceio_vs_media.png")
-
 
 # 7) Deflação por IPCA: a evolução do per capita de Saúde é real, ou é
 # em boa parte inflação? Índices oficiais do IPCA (IBGE/BCB), acumulado
